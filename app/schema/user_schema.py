@@ -3,7 +3,7 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
-from app.util.schema import AllOptional
+from app.util.schema import partial_model
 
 
 class BaseUser(BaseModel):
@@ -14,22 +14,18 @@ class BaseUser(BaseModel):
     is_superuser: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class BaseUserWithPassword(BaseUser):
     password: str
 
 
-class User(ModelBaseInfo, BaseUser, metaclass=AllOptional): ...
+class User(BaseUser):
+    pass
 
-
-class FindUser(FindBase, BaseUser, metaclass=AllOptional):
-    email__eq: str
-    ...
-
-
-class UpsertUser(BaseUser, metaclass=AllOptional): ...
+FindUser = partial_model(BaseUser, "FindUser")
+UpsertUser = partial_model(BaseUser, "UpsertUser")
 
 
 class FindUserResult(BaseModel):

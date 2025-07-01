@@ -27,7 +27,6 @@ def sign_up(user_info: SignUp, service: AuthService = Depends(Provide[Container.
 
 
 @router.get("/me", response_model=UserSchema)
-@inject
 def get_me(current_user: User = Depends(get_current_active_user)):
     user = UserSchema()
     user.name = current_user.name

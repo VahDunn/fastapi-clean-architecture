@@ -7,7 +7,6 @@ from app.services.base_service import BaseService
 
 
 def inject(func):
-    @di_inject
     @wraps(func)
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)

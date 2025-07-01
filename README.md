@@ -4,6 +4,10 @@
 Base FastAPI project for applying general RestAPI Application cases.
 ![openapi-docs](./doc/images/openapi-docs-v2.png)
 
+После установки requirements.txt (Требуется Python 3.11!) дополнительно
+`pip install --force-reinstall "fastapi[standard]"`
+`pip install pydantic-settings`
+
 ## concept
 1. Minimal functionality.
 2. Convincing architecture.

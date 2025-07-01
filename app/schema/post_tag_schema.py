@@ -4,8 +4,10 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
-from app.util.schema import AllOptional
+from app.util.schema import partial_model
 
+
+# -------- Post Models --------
 
 class BasePost(BaseModel):
     user_token: str
@@ -14,22 +16,19 @@ class BasePost(BaseModel):
     is_published: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
+class Post(ModelBaseInfo, BasePost):
+    pass
 
-class Post(ModelBaseInfo, BasePost, metaclass=AllOptional): ...
-
-
-class FindPost(FindBase, BasePost, metaclass=AllOptional): ...
-
-
-class UpsertPost(BasePost, metaclass=AllOptional): ...
-
+FindPost = partial_model(BasePost, "FindPost")
+UpsertPost = partial_model(BasePost, "UpsertPost")
 
 class FindPostResult(BaseModel):
     founds: Optional[List[Post]]
     search_options: Optional[SearchOptions]
 
+# -------- Tag Models --------
 
 class BaseTag(BaseModel):
     user_token: str
@@ -37,47 +36,39 @@ class BaseTag(BaseModel):
     description: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
+class Tag(ModelBaseInfo, BaseTag):
+    pass
 
-class Tag(ModelBaseInfo, BaseTag, metaclass=AllOptional): ...
+FindTag = partial_model(BaseTag, "FindTag")
 
+class FindTag(FindBase, FindTag):
+    id__in: Optional[str] = None
 
-class FindTag(FindBase, BaseTag, metaclass=AllOptional):
-    id__in: str
-
-
-class UpsertTag(BaseTag, metaclass=AllOptional): ...
-
+UpsertTag = partial_model(BaseTag, "UpsertTag")
 
 class FindTagResult(BaseModel):
     founds: Optional[List[Tag]]
     search_options: Optional[SearchOptions]
 
-
-# for many to many
-
+# -------- Many to Many --------
 
 class PostWithTags(Post):
-    tags: Optional[List[Tag]]
-
+    tags: Optional[List[Tag]] = None
 
 class TagWithPosts(Tag):
-    posts: Optional[List[Post]]
-
+    posts: Optional[List[Post]] = None
 
 class UpsertPostWithTags(UpsertPost):
-    tag_ids: Optional[List[int]]
-
+    tag_ids: Optional[List[int]] = None
 
 class UpsertTagWithPosts(UpsertTag):
-    post_ids: Optional[List[int]]
-
+    post_ids: Optional[List[int]] = None
 
 class FindPostWithTagsResult(BaseModel):
     founds: Optional[List[PostWithTags]]
     search_options: Optional[SearchOptions]
-
 
 class FindTagWithPostsResult(BaseModel):
     founds: Optional[List[TagWithPosts]]

@@ -1,8 +1,8 @@
 import os
-from typing import List
+from typing import List, ClassVar
 
 from dotenv import load_dotenv
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 load_dotenv()
 
@@ -42,15 +42,15 @@ class Configs(BaseSettings):
 
     # database
     DB: str = os.getenv("DB", "postgresql")
-    DB_USER: str = os.getenv("DB_USER")
-    DB_PASSWORD: str = os.getenv("DB_PASSWORD")
-    DB_HOST: str = os.getenv("DB_HOST")
+    DB_USER: str = os.getenv("DB_USER", "")
+    DB_PASSWORD: str = os.getenv("DB_PASSWORD", "")
+    DB_HOST: str = os.getenv("DB_HOST", "")
     DB_PORT: str = os.getenv("DB_PORT", "3306")
     DB_ENGINE: str = DB_ENGINE_MAPPER.get(DB, "postgresql")
 
-    DATABASE_URI_FORMAT: str = "{db_engine}://{user}:{password}@{host}:{port}/{database}"
+    DATABASE_URI_FORMAT: ClassVar[str] = "{db_engine}://{user}:{password}@{host}:{port}/{database}"
 
-    DATABASE_URI = "{db_engine}://{user}:{password}@{host}:{port}/{database}".format(
+    DATABASE_URI: ClassVar[str] = "{db_engine}://{user}:{password}@{host}:{port}/{database}".format(
         db_engine=DB_ENGINE,
         user=DB_USER,
         password=DB_PASSWORD,
@@ -60,9 +60,9 @@ class Configs(BaseSettings):
     )
 
     # find query
-    PAGE = 1
-    PAGE_SIZE = 20
-    ORDERING = "-id"
+    PAGE: int = 1
+    PAGE_SIZE: int = 20
+    ORDERING: str = "-id"
 
     class Config:
         case_sensitive = True
